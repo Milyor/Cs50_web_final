@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Flask, redirect
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hello, puta"
+    redirect ("layout.html")
