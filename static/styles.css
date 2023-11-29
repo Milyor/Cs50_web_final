@@ -1,8 +1,8 @@
 body {
     font-size: 15px;
-    background: black;
+    background: #2B3467;
 }
 
-head {
-    
+.custom-btn {
+    background-color: #EB455F;
 }
