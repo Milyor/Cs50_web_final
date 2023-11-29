@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Recommender
+{% endblock %}
+
+{% block main %}
+
+<form action="/">
+    <div class="mb-3">
+<input placeholder="Game" name="game" autocomplete="off" autofocus class="form-control mx-auto w-auto">
+    </div>
+    <div class="mb-3">
+<button type="submit" class="btn btn-primary" type="submit">Recommend Me</button>
+    </div>
+</form>
+{% endblock %}
