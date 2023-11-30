@@ -1,8 +1,20 @@
 body {
-    font-size: 15px;
     background: #2B3467;
 }
-
+.custom-font {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem ;
+}
 .custom-btn {
     background-color: #EB455F;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.custom-btn:hover {
+    background-color: rgba(235, 69, 95, 0.5);
+}
+h1 {
+    color: white;
+    margin-bottom: 1em;
+
 }
