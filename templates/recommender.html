@@ -6,9 +6,9 @@
 
 {% block main %}
 
-<h1> Discover Your Perfect Indie Escape </h1>
+<h1> Discover Your Indie Escape </h1>
 
-<form action="/">
+<form action="/" method='post'>
     <div class="mb-3">
 <input placeholder="Game" name="game" autocomplete="off" autofocus class="form-control mx-auto w-auto">
     </div>
@@ -16,4 +16,9 @@
 <button type="submit" class="btn custom-btn" type="submit">Recommend Me</button>
     </div>
 </form>
+<ul>
+{% for name in game_names %}
+    <li>{{ name }}</li>
+    {% endfor %}
+</ul>
 {% endblock %}
