@@ -1,3 +1,4 @@
+from dotenv import load_dotenv 
 import os
 from cs50 import SQL
 from igdb.wrapper import IGDBWrapper
@@ -7,10 +8,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import re
 import json
 
-
+load_dotenv()
 api_key = os.getenv("API_TOKEN")
 api_user_key = os.getenv("API_USER_KEY")
-wrapper = IGDBWrapper("api_user_key", "api_key")
+wrapper = IGDBWrapper(api_user_key, api_key)
 
 app = Flask(__name__)
 
