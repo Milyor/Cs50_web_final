@@ -4,13 +4,9 @@ from cs50 import SQL
 from igdb.wrapper import IGDBWrapper
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import linear_kernel
 from werkzeug.security import check_password_hash, generate_password_hash
 import re
 import json
-import pandas as pd
-import numpy as np
 
 # Credentials
 load_dotenv()
@@ -48,6 +44,17 @@ def home():
                 genres_data = json.loads(genres_response.decode('utf-8'))
                 if genres_data and 'genres' in genres_data[0]:
                     genres = genres_data[0]['genres']
+                    
+                additional_genre = 'indie'
+                
+                similar_games = []
+                
+                for other_game_id, other_genres in all_genres.items():
+                    similarity_score = calculate_similarity(genres, other_genres, additional_genre)
+                    similar_games.append({'id': other_game_id, 'similarity': similarity_score})
+                    
+                similar_games = sorted(similar_games, key=lambda x: x['similarity'], reverse=True)
+                    
                 
                 return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, genres = genres)
             
@@ -64,3 +71,22 @@ def home():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
+# Calculate the similarity of the genres
+def calculate_similarity(genres1, genres2, additional_genre):
+    set1 = set(genres1)
+    set2 = set(genres2)
+    
+    additional_genre_preset = additional_genre in set2 and additional_genre not in set1
+    
+    # calculate Jaccard similarity
+    intersection = set1.intersection(set2)
+    union = set1.union(set2)
+    
+    # add a boost to similarity if the additional genre is present
+    similarity = len(intersection) / len(union) + 0.2 if len(union) > 0 else 0
+    
+    #increase similarity if the additional genre is present 
+    similarity += 0.3 if additional_genre_preset else 0
+    return similarity
+    
