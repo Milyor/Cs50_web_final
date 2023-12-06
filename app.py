@@ -5,10 +5,14 @@ from igdb.wrapper import IGDBWrapper
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
 from werkzeug.security import check_password_hash, generate_password_hash
 import re
 import json
+import pandas as pd
+import numpy as np
 
+# Credentials
 load_dotenv()
 api_key = os.getenv("API_TOKEN")
 api_user_key = os.getenv("API_USER_KEY")
