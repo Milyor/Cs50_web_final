@@ -16,9 +16,16 @@
 <button type="submit" class="btn custom-btn" type="submit">Recommend Me</button>
     </div>
 </form>
+
+{% if game_id %}
+    <h3>{{ game_id }}</h3>
+
 <ul>
-{% for name in game_names %}
-    <li>{{ name }}</li>
+    {% for genre in genres %}
+    <li>{{ genre.name }}</li>
     {% endfor %}
 </ul>
+
+{% endif %}
+
 {% endblock %}
