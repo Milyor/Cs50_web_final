@@ -37,6 +37,7 @@ def home():
             if decoded_data:
                 game_id = decoded_data[0]['id']
                 
+                # Fetch genres for the input game
                 genres_response = wrapper.api_request(
                     'games',
                     f'fields genres.name; where id = {game_id}; limit 5;'
@@ -44,19 +45,62 @@ def home():
                 genres_data = json.loads(genres_response.decode('utf-8'))
                 if genres_data and 'genres' in genres_data[0]:
                     genres = genres_data[0]['genres']
+                 
+                # Retrieving games where genres is indie, to not look for all the games if im just recommending indie games
+                all_games_response = wrapper.api_request(
+                    'games',
+                    f'fields id, genres.name; where genres.name = "indie"; limit 50;'
+                )
+                
+                all_games_data = json.loads(all_games_response.decode('utf-8'))
+                
+                # Initialized an empty list to store indie games
+                filtered_games = []
+                
+                # Loop through each game 
+                for game_data in all_games_data:
+                    game_id = game_data['id']
                     
+                    # extract the list of genres for the current game 
+                    game_genres = game_data.get('genres', [])
+                    
+                    # storing the game details including genres in the filtered_games
+                    filtered_games.append({'id': game_id, 'name': game_data['name'], 'genres': game_genres})
+                if not filtered_games:
+                    flash("No indie games found.")
+                    return render_template("recommender.html")
+                
                 additional_genre = 'indie'
                 
                 similar_games = []
                 
-                for other_game_id, other_genres in all_genres.items():
+                for other_game in filtered_games:
+                    other_game_id = other_game['id']
+                    other_genres = other_game['genres']
                     similarity_score = calculate_similarity(genres, other_genres, additional_genre)
                     similar_games.append({'id': other_game_id, 'similarity': similarity_score})
                     
                 similar_games = sorted(similar_games, key=lambda x: x['similarity'], reverse=True)
-                    
                 
-                return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, genres = genres)
+                # Get top N similar games
+                
+                top_n_similar_games = similar_games[:5]
+                
+                # Fetch additional information for the recommended games
+                recommended_games_info = []
+                
+                for game in top_n_similar_games:
+                    game_id = game['id']
+                    response = wrapper.api_request(
+                        'games',
+                        f'fields name, summary, genres.name; where id = {game_id}; limit 1:'
+                    )
+                    recommended_games_info = json.loads(response.decode('utf-8'))
+                    recommended_games_info.append(recommended_games_info)
+                    
+                recommended_game_names = [game_info[0]['name'] for game_info in recommended_games_info]
+                
+                return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, genres = genres, filtered_games = filtered_games)
             
             else:
                 
