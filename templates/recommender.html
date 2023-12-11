@@ -20,10 +20,11 @@
 {% if game_id %}
     <h3>{{ game_id }}</h3>
     {% endif %}
-    {% if filtered_games %}
+
+    {% if similar_games %}
 <ul>
-    {% for game in filtered_games %}
-    <li>{{ game['id']}} - {{ game['name'] }}</li>
+    {% for game in similar_games %}
+    <li>{{ game.name }} </li>
     {% endfor %}
 </ul>
 

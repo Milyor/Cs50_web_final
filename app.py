@@ -19,6 +19,9 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def home():
     genres = []
+    filtered_games = []
+    similar_games = []
+    error_message = None 
     if request.method == "POST":
         game_name = request.form.get("game")
         if not game_name:
@@ -49,58 +52,26 @@ def home():
                 # Retrieving games where genres is indie, to not look for all the games if im just recommending indie games
                 all_games_response = wrapper.api_request(
                     'games',
-                    f'fields id, genres.name; where genres.name = "indie"; limit 50;'
+                    f'fields name, genres.name; where genres.name = "Indie"; limit 100;'
                 )
                 
                 all_games_data = json.loads(all_games_response.decode('utf-8'))
                 
                 # Initialized an empty list to store indie games
-                filtered_games = []
+                if all_games_data:
+                    filtered_games = [{'name': game['name'], 'genres': game['genres']} for game in all_games_data]
+                else:
+                    error_message = "No indie games found"   
                 
-                # Loop through each game 
-                for game_data in all_games_data:
-                    game_id = game_data['id']
+                # checking for similar games  
+                excluded_genre = 'Indie'
+                
+                for indie_game in filtered_games:
+                    similarity_score = calculate_similarity(genres, indie_game['genres'], excluded_genre)
+                    similar_games.append({'name': indie_game['name'], 'similarity': similarity_score})
                     
-                    # extract the list of genres for the current game 
-                    game_genres = game_data.get('genres', [])
-                    
-                    # storing the game details including genres in the filtered_games
-                    filtered_games.append({'id': game_id, 'name': game_data['name'], 'genres': game_genres})
-                if not filtered_games:
-                    flash("No indie games found.")
-                    return render_template("recommender.html")
-                
-                additional_genre = 'indie'
-                
-                similar_games = []
-                
-                for other_game in filtered_games:
-                    other_game_id = other_game['id']
-                    other_genres = other_game['genres']
-                    similarity_score = calculate_similarity(genres, other_genres, additional_genre)
-                    similar_games.append({'id': other_game_id, 'similarity': similarity_score})
-                    
-                similar_games = sorted(similar_games, key=lambda x: x['similarity'], reverse=True)
-                
-                # Get top N similar games
-                
-                top_n_similar_games = similar_games[:5]
-                
-                # Fetch additional information for the recommended games
-                recommended_games_info = []
-                
-                for game in top_n_similar_games:
-                    game_id = game['id']
-                    response = wrapper.api_request(
-                        'games',
-                        f'fields name, summary, genres.name; where id = {game_id}; limit 1:'
-                    )
-                    recommended_games_info = json.loads(response.decode('utf-8'))
-                    recommended_games_info.append(recommended_games_info)
-                    
-                recommended_game_names = [game_info[0]['name'] for game_info in recommended_games_info]
-                
-                return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, genres = genres, filtered_games = filtered_games)
+                similar_games = sorted(similar_games, key=lambda x: x['similarity'], reverse=True)       
+                return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, genres = genres, filtered_games = filtered_games, error_message = error_message, similar_games = similar_games)
             
             else:
                 
@@ -117,11 +88,9 @@ if __name__ == '__main__':
     app.run(debug=True)
     
 # Calculate the similarity of the genres
-def calculate_similarity(genres1, genres2, additional_genre):
-    set1 = set(genres1)
-    set2 = set(genres2)
-    
-    additional_genre_preset = additional_genre in set2 and additional_genre not in set1
+def calculate_similarity(genres1, genres2, excluded_genre):
+    set1 = set(genre['name'] for genre in genres1) - {excluded_genre}
+    set2 = set(genre['name'] for genre in genres2) - {excluded_genre}
     
     # calculate Jaccard similarity
     intersection = set1.intersection(set2)
@@ -130,7 +99,5 @@ def calculate_similarity(genres1, genres2, additional_genre):
     # add a boost to similarity if the additional genre is present
     similarity = len(intersection) / len(union) + 0.2 if len(union) > 0 else 0
     
-    #increase similarity if the additional genre is present 
-    similarity += 0.3 if additional_genre_preset else 0
     return similarity
     
