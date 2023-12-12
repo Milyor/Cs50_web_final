@@ -16,10 +16,28 @@ wrapper = IGDBWrapper(api_user_key, api_key)
 
 app = Flask(__name__)
 
+cached_data_file = "games_list.json"
+
+cached_indie_games = []
+# Load cached data from the file if its exists
+try:
+    with open(cached_data_file, "r") as file:
+        file_contents = file.read()
+        if file_contents:
+            cached_data = json.loads(file_contents)
+            if isinstance(cached_data, list):
+                cached_indie_games = cached_data
+         
+                game_ids_by_name = {}
+            
+except FileNotFoundError:
+    pass
+
 @app.route("/", methods=["GET", "POST"])
 def home():
+    global cached_indie_games
+    global game_ids_by_name
     genres = []
-    filtered_games = []
     similar_games = []
     error_message = None 
     if request.method == "POST":
@@ -27,6 +45,7 @@ def home():
         if not game_name:
             flash("Fill out the field with a game")
             return render_template("recommender.html")
+        all_games_response = None
         
         try: 
             #search for the game
@@ -50,32 +69,38 @@ def home():
                     genres = genres_data[0]['genres']
                  
                 # Retrieving games where genres is indie, to not look for all the games if im just recommending indie games
-                all_games_response = wrapper.api_request(
-                    'games',
-                    f'fields name, id, genres.name; where genres.name = "Indie"; limit 100;'
-                )
+                if not cached_indie_games:
+                    all_games_response = wrapper.api_request(
+                        'games',
+                        f'fields name, id, genres.name; where genres.name = "Indie"; limit 100;'
+                    )
                 
-                all_games_data = json.loads(all_games_response.decode('utf-8'))
-                
-                # Initialized an empty list to store indie games
-                if all_games_data:
-                    filtered_games = [{'name': game['name'], 'genres': game['genres'], 'id': game['id']} for game in all_games_data]
-                    
-                    game_ids_by_name = {game['name']: game['id'] for game in filtered_games}
-                else:
-                    error_message = "No indie games found"   
+                    if all_games_response and all_games_response.status_code == 200:
+                        all_games_data = json.loads(all_games_response.decode('utf-8'))
+                        
+                        # Initialized an empty list to store indie games
+                        if all_games_data:
+                            cached_indie_games = [{'name': game['name'], 'genres': game['genres'], 'id': game['id']} for game in all_games_data]                           
+                            game_ids_by_name = {game['name']: game['id'] for game in cached_indie_games}
+                            with open(cached_data_file, "w") as file:
+                                json.dump(cached_indie_games, file)
+                        else:
+                            error_message = "No indie games found" 
+                    else:
+                        error_message = "Failed to fetch indie games from the API"  
                 
                 # checking for similar games  
                 excluded_genre = 'Indie'
                 
-                for indie_game in filtered_games:
+                for indie_game in cached_indie_games:
                     similarity_score = calculate_similarity(genres, indie_game['genres'], excluded_genre)
                     similar_games.append({'name': indie_game['name'], 'similarity': similarity_score})
                     
                 similar_games = sorted(similar_games, key=lambda x: x['similarity'], reverse=True)
                 
                 #Top games
-                top_similar_games = similar_games[:5]  
+                top_similar_games = [{'name': indie_game['name'], 'similarity': indie_game['similarity']} for indie_game in similar_games[:5]]
+  
                 
                 # Fetching 1080p cover image URLs for top similar games
                 for game in top_similar_games:
