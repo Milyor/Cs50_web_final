@@ -52,14 +52,16 @@ def home():
                 # Retrieving games where genres is indie, to not look for all the games if im just recommending indie games
                 all_games_response = wrapper.api_request(
                     'games',
-                    f'fields name, genres.name; where genres.name = "Indie"; limit 100;'
+                    f'fields name, id, genres.name; where genres.name = "Indie"; limit 100;'
                 )
                 
                 all_games_data = json.loads(all_games_response.decode('utf-8'))
                 
                 # Initialized an empty list to store indie games
                 if all_games_data:
-                    filtered_games = [{'name': game['name'], 'genres': game['genres']} for game in all_games_data]
+                    filtered_games = [{'name': game['name'], 'genres': game['genres'], 'id': game['id']} for game in all_games_data]
+                    
+                    game_ids_by_name = {game['name']: game['id'] for game in filtered_games}
                 else:
                     error_message = "No indie games found"   
                 
@@ -74,6 +76,25 @@ def home():
                 
                 #Top games
                 top_similar_games = similar_games[:5]  
+                
+                # Fetching 1080p cover image URLs for top similar games
+                for game in top_similar_games:
+                    game_name = game['name']
+                    if game_name in game_ids_by_name:
+                        game_id = game_ids_by_name[game_name]
+                    if game_id:
+                        
+                        game_details_response = wrapper.api_request(
+                            'games',
+                            f'fields name, cover.url; where id = {game_id};'
+                        )
+                        
+                        games_urls = json.loads(game_details_response.decode('utf-8'))
+                        
+                        if games_urls and 'cover' in games_urls[0]:
+                            cover_url = games_urls[0]['cover']['url']
+                            # Appending 't_1080p" to the end to get the 1080p image
+                            game['cover_url'] = f"{cover_url[:-4]}t_1080p{cover_url[-4:]}"
                                  
                 return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, error_message = error_message, top_similar_games = top_similar_games)
             
