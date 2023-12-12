@@ -70,8 +70,12 @@ def home():
                     similarity_score = calculate_similarity(genres, indie_game['genres'], excluded_genre)
                     similar_games.append({'name': indie_game['name'], 'similarity': similarity_score})
                     
-                similar_games = sorted(similar_games, key=lambda x: x['similarity'], reverse=True)       
-                return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, genres = genres, filtered_games = filtered_games, error_message = error_message, similar_games = similar_games)
+                similar_games = sorted(similar_games, key=lambda x: x['similarity'], reverse=True)
+                
+                #Top games
+                top_similar_games = similar_games[:5]  
+                                 
+                return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, error_message = error_message, top_similar_games = top_similar_games)
             
             else:
                 

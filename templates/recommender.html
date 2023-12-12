@@ -21,9 +21,9 @@
     <h3>{{ game_id }}</h3>
     {% endif %}
 
-    {% if similar_games %}
+    {% if top_similar_games %}
 <ul>
-    {% for game in similar_games %}
+    {% for game in top_similar_games %}
     <li>{{ game.name }} </li>
     {% endfor %}
 </ul>
