@@ -37,6 +37,7 @@ except FileNotFoundError:
 def home():
     global cached_indie_games
     global game_ids_by_name
+    cover_urls = []
     genres = []
     similar_games = []
     error_message = None 
@@ -75,19 +76,16 @@ def home():
                         f'fields name, id, genres.name; where genres.name = "Indie"; limit 100;'
                     )
                 
-                    if all_games_response and all_games_response.status_code == 200:
-                        all_games_data = json.loads(all_games_response.decode('utf-8'))
+                    all_games_data = json.loads(all_games_response.decode('utf-8'))
                         
                         # Initialized an empty list to store indie games
-                        if all_games_data:
+                    if all_games_data:
                             cached_indie_games = [{'name': game['name'], 'genres': game['genres'], 'id': game['id']} for game in all_games_data]                           
                             game_ids_by_name = {game['name']: game['id'] for game in cached_indie_games}
                             with open(cached_data_file, "w") as file:
                                 json.dump(cached_indie_games, file)
-                        else:
-                            error_message = "No indie games found" 
                     else:
-                        error_message = "Failed to fetch indie games from the API"  
+                         error_message = "No indie games found" 
                 
                 # checking for similar games  
                 excluded_genre = 'Indie'
@@ -116,12 +114,12 @@ def home():
                         
                         games_urls = json.loads(game_details_response.decode('utf-8'))
                         
-                        if games_urls and 'cover' in games_urls[0]:
+                        if games_urls and games_urls[0].get('cover'):
                             cover_url = games_urls[0]['cover']['url']
                             # Appending 't_1080p" to the end to get the 1080p image
-                            game['cover_url'] = f"{cover_url[:-4]}t_1080p{cover_url[-4:]}"
+                            cover_urls.append(f"https://images.igdb.com/igdb/image/upload/t_1080p/{cover_url.split('/')[-1]}")
                                  
-                return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, error_message = error_message, top_similar_games = top_similar_games)
+                return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, error_message = error_message, top_similar_games = top_similar_games, cover_urls=cover_urls)
             
             else:
                 
@@ -133,10 +131,6 @@ def home():
         
     return render_template("recommender.html")
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
-    
 # Calculate the similarity of the genres
 def calculate_similarity(genres1, genres2, excluded_genre):
     set1 = set(genre['name'] for genre in genres1) - {excluded_genre}
@@ -151,3 +145,9 @@ def calculate_similarity(genres1, genres2, excluded_genre):
     
     return similarity
     
+@app.route("/test")
+def test():
+    return "This is a test route"
+
+if __name__ == '__main__':
+    app.run(debug=True, host='127.0.0.1', port=5000)

@@ -17,17 +17,31 @@
     </div>
 </form>
 
-{% if game_id %}
     <h3>{{ game_id }}</h3>
-    {% endif %}
-
-    {% if top_similar_games %}
-<ul>
-    {% for game in top_similar_games %}
-    <li>{{ game['name'] }} </li>
-    {% endfor %}
-</ul>
-
+{% if decoded_data %}
+    <p>Decoded Data: {{ decoded_data }}</p>
 {% endif %}
 
+{% if error_message %}
+    <p>Error Message: {{ error_message }}</p>
+{% endif %}
+
+{% if top_similar_games %}
+    <h2>Top Similar Games:</h2>
+    <ul>
+        {% for game in top_similar_games %}
+            <li>
+                <p>Name: {{ game.name }}</p>
+                <p>Similarity: {{ game.similarity }}</p>
+                <p>ID: {{ game.id }}</p>
+                {% for response, url_response, json_response in zipped_responses %}
+                    {% if response.id == game.id %}
+                        <p>Response: {{ response }}</p>
+                        <p>URL Response: {{ url_response }}</p>
+                    {% endif %}
+                {% endfor %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}
