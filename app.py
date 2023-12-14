@@ -27,17 +27,14 @@ try:
             cached_data = json.loads(file_contents)
             if isinstance(cached_data, list):
                 cached_indie_games = cached_data
-         
-                game_ids_by_name = {}
-            
+                           
 except FileNotFoundError:
     pass
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     global cached_indie_games
-    global game_ids_by_name
-    cover_urls = []
+    
     genres = []
     similar_games = []
     error_message = None 
@@ -92,21 +89,28 @@ def home():
                 
                 for indie_game in cached_indie_games:
                     similarity_score = calculate_similarity(genres, indie_game['genres'], excluded_genre)
-                    similar_games.append({'name': indie_game['name'], 'similarity': similarity_score})
+                    similar_games.append({'name': indie_game['name'], 'similarity': similarity_score, 'id': indie_game['id']})
                     
                 similar_games = sorted(similar_games, key=lambda x: x['similarity'], reverse=True)
                 
-                #Top games
-                top_similar_games = [{'name': indie_game['name'], 'similarity': indie_game['similarity']} for indie_game in similar_games[:5]]
-  
-                
+                # Top games
+                top_similar_games = []
+                for indie_game in similar_games[:5]:
+                    game_data = {'name': indie_game['name'], 'similarity': indie_game['similarity']}
+                    
+                    # Check if 'id' key is present in the dictionary
+                    if 'id' in indie_game:
+                        game_data['id'] = indie_game['id']
+                    else:
+                        game_data['id'] = None
+                    top_similar_games.append(game_data)
+                                   
                 # Fetching 1080p cover image URLs for top similar games
+                cover_urls = []
+                
                 for game in top_similar_games:
-                    game_name = game['name']
-                    if game_name in game_ids_by_name:
-                        game_id = game_ids_by_name[game_name]
+                    game_id = game['id']
                     if game_id:
-                        
                         game_details_response = wrapper.api_request(
                             'games',
                             f'fields name, cover.url; where id = {game_id};'
