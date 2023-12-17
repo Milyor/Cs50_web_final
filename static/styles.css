@@ -1,5 +1,5 @@
 body {
-    background: #2B3467;
+    background: #282A3A;
 }
 .custom-font {
     font-family: 'Poppins', sans-serif;
@@ -17,4 +17,30 @@ h1 {
     color: white;
     margin-bottom: 1em;
 
+}
+
+.game-card {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+
+}
+
+.game-card img {
+    width: 75%;
+    border-radius: 5px;
+}
+.top-recommended {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #ddd;
+    text-align: center;
+}
+
+p {
+    color: #ddd;
+}
+
+h2 {
+    color: #ddd;
 }

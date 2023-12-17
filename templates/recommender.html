@@ -7,39 +7,45 @@
 {% block main %}
 
 <h1> Discover Your Indie Escape </h1>
-
-<form action="/" method='post'>
-    <div class="mb-3">
-<input placeholder="Game" name="game" autocomplete="off" autofocus class="form-control mx-auto w-auto">
-    </div>
-    <div class="mb-3">
-<button type="submit" class="btn custom-btn" type="submit">Recommend Me</button>
-    </div>
-</form>
-
-<h3>{{ game_id }}</h3>
-{% if decoded_data %}
-    <p>Decoded Data: {{ decoded_data }}</p>
+{% if not top_similar_games %}
+    <form action="/" method='post'>
+        <div class="mb-3">
+    <input placeholder="Game" name="game" autocomplete="off" autofocus class="form-control mx-auto w-auto">
+        </div>
+        <div class="mb-3">
+    <button type="submit" class="btn custom-btn" type="submit">Recommend Me</button>
+        </div>
+    </form>
+    {% if error_message_game %}
+        <p style="color: white;">{{ error_message_game }}</p>
+    {% endif %}
 {% endif %}
 
-{% if error_message %}
-    <p>Error Message: {{ error_message }}</p>
+{% if top_similar_games %}
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-8 ">
+                <div class="game-card d-flex align-items-start">
+                    <img src="{{ cover_urls[0] }}" alt="{{ top_similar_games[0].name }} Cover">
+                        <div>
+                        <h2>{{ top_similar_games[0].name }} </h2>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            {% for game in top_similar_games[1:] %}
+            <div class="col-md-2">
+                <div class="game-card">
+                    <img src="{{ cover_urls[loop.index] }}" alt="{{ game.name }} Cover">
+                    <p>{{ game.name }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 {% endif %}
 
-<h2>Top Similar Games:</h2>
-<ul>
-    {% for game in top_similar_games %}
-        <li>
-            <p>Name: {{ game['name'] }}</p>
-            <p>Similarity: {{ game['similarity'] }}</p>
-            <p>ID: {{ game['id'] }}</p>
-           
-            {% if cover_urls %}
-                {% if loop.index0 < cover_urls|length %}
-                    <img src="{{ cover_urls[loop.index0] }}" alt="game cover image">
-                {% endif %}
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
 {% endblock %}
