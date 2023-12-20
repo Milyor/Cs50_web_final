@@ -23,22 +23,26 @@
 {% endif %}
 
 {% if top_similar_games %}
+
     <div class="container mt-3">
         <h1 class="top-game-card d-flex align-items-start mb-4"> Discover Your Indie Escape </h1>  
     </div>
-        <div class="container mt-3 custom-container">
-            <div class="row">    
-                <div class="col-md-4 ">               
-                    <div class="game-card d-flex align-items-start mb-4 position-relative"> 
-                    <img src="{{ cover_urls[0] }}" alt="{{ top_similar_games[0].name }} Cover" class="mr-3 mb-2" style="max-width: 580px">
-                            <div>
-                                <h2 style="margin-left: 60px">{{ top_similar_games[0].name }} </h2>
-                            </div>
+
+    <div class="container mt-3 custom-container dark-background blurred-background">
+            <div class="container mt-3 custom-container">
+                <div class="row">    
+                    <div class="col-md-4 ">               
+                        <div class="game-card d-flex align-items-start mb-4 position-relative"> 
+                        <img src="{{ cover_urls[0] }}" alt="{{ top_similar_games[0].name }} Cover" class="mr-3 mb-2" style="max-width: 480px">
+                                <div>
+                                    <h2 style="margin-left: 60px">{{ top_similar_games[0].name }} </h2>
+                                </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     <div class="container mt-3 custom">
         <div class="game-card d-flex align-items-start mb-4">
             <h2>More like this</h2>
