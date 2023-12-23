@@ -111,23 +111,27 @@ def home():
                                 
             # Fetching 1080p cover image URLs for top similar games
             cover_urls = []
+            summaries = []
             
             for game in top_similar_games:
                 game_id = game['id']
                 if game_id:
                     game_details_response = wrapper.api_request(
                         'games',
-                        f'fields name, cover.url; where id = {game_id};'
+                        f'fields name, cover.url, summary; where id = {game_id};'
                     )
                     
-                    games_urls = json.loads(game_details_response.decode('utf-8'))
+                    games_details = json.loads(game_details_response.decode('utf-8'))
                     
-                    if games_urls and games_urls[0].get('cover'):
-                        cover_url = games_urls[0]['cover']['url']
-                        # Appending 't_1080p" to the end to get the 1080p image
-                        cover_urls.append(f"https://images.igdb.com/igdb/image/upload/t_1080p/{cover_url.split('/')[-1]}")
+                    if games_details:
+                        cover_url = games_details[0].get('cover',{}).get('url')
+                        if cover_url:
+                            # Appending 't_1080p" to the end to get the 1080p image
+                            cover_urls.append(f"https://images.igdb.com/igdb/image/upload/t_1080p/{cover_url.split('/')[-1]}")
+                        summary = games_details[0].get('summary')
+                        summaries.append(summary if summary else "no summary available") 
                                 
-            return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, error_message = error_message, top_similar_games = top_similar_games, cover_urls=cover_urls)
+            return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, error_message = error_message, top_similar_games = top_similar_games, cover_urls=cover_urls, summaries=summaries)
 
                 
         except Exception as e:
