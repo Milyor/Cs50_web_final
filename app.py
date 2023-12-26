@@ -76,7 +76,7 @@ def home():
                     'games',
                     f'fields name, id, genres.name; where genres.name = "Indie"; limit 200;'
                 )
-            
+                
                 all_games_data = json.loads(all_games_response.decode('utf-8'))
                     
                 # Initialized an empty list to store indie games
@@ -132,12 +132,11 @@ def home():
                         summaries.append(summary if summary else "no summary available") 
                                 
             return render_template("recommender.html", decoded_data=decoded_data, game_id=game_id, error_message = error_message, top_similar_games = top_similar_games, cover_urls=cover_urls, summaries=summaries)
-
-                
+    
         except Exception as e:
         # Handle API request errors
             flash(f"Error: {str(e)}")
-        
+                   
     return render_template("recommender.html")
 
 # Calculate the similarity of the genres
