@@ -1,10 +1,7 @@
 from dotenv import load_dotenv 
 import os
-from cs50 import SQL
 from igdb.wrapper import IGDBWrapper
 from flask import Flask, flash, redirect, render_template, request, session
-from flask_session import Session
-from werkzeug.security import check_password_hash, generate_password_hash
 import re
 import json
 
@@ -153,5 +150,3 @@ def calculate_similarity(genres1, genres2, excluded_genre):
     
     return similarity
     
-if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
