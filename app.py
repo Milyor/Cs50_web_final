@@ -53,7 +53,7 @@ def home():
             
             # Check if any games were found
             if not decoded_data:
-                error_message_game = f"No No game found with the name '{game_name}'."
+                error_message_game = f"No game found with the name '{game_name}'."
                 return render_template("recommender.html", error_message_game=error_message_game)
             
             
@@ -74,7 +74,7 @@ def home():
             if not cached_indie_games:
                 all_games_response = wrapper.api_request(
                     'games',
-                    f'fields name, id, genres.name; where genres.name = "Indie"; limit 100;'
+                    f'fields name, id, genres.name; where genres.name = "Indie"; limit 200;'
                 )
             
                 all_games_data = json.loads(all_games_response.decode('utf-8'))

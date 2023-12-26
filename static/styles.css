@@ -83,4 +83,20 @@ footer {
 }
 #top_game{
     float:left;
+    border-radius: 15px;
 }
+.smaller-img{
+    border-radius: 15px;
+
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #5c5c5c;
+    backdrop-filter: blur(10px);
+    padding: 0;
+  }

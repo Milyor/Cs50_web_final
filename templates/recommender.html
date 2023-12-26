@@ -25,20 +25,20 @@
 {% if top_similar_games %}
 
     <div class="container mt-3">
-        <h1 class="top-game-card d-flex align-items-start mb-4"> Discover Your Indie Escape </h1>  
+        <h1 class="d-flex align-items-start mb-4"> Discover Your Indie Escape </h1>  
     </div>
     
             <div class="container mt-3 custom-container">               
                 <div class="game-card d-flex align-items-start mb-4 position-relative"> 
                     <img src="{{ cover_urls[0] }}" alt="{{ top_similar_games[0].name }} Cover" id="top_game"class="mr-3 mb-2" style="max-width: 360px">
-                        <div class="container mt-3">
+                        <div class="container">
                             <h2 style="margin-left: 60px">{{ top_similar_games[0].name }} </h2>
                             <p style="margin-left: 60px">{{ summaries[0] }}
                         </div>
                 </div>
             </div>
-    <div class="container mt-3 custom">
-        <div class="game-card d-flex align-items-start mb-4">
+    <div class="container mt-3">
+        <div class="d-flex align-items-start mb-4">
             <h2>More like this</h2>
         </div>
     </div>
@@ -48,7 +48,7 @@
         {% for game in top_similar_games[1:] %}
         <div class="col-md-3">
             <div class="game-card text-center">
-                <img src="{{ cover_urls[loop.index] }}" alt="{{ game.name }} Cover" class="mb-2" style="max-width: 100%">
+                <img src="{{ cover_urls[loop.index] }}" alt="{{ game.name }} Cover" class="mb-2 smaller-img" style="max-width: 100%">
                 <p>{{ game.name }}</p>
             </div>
         </div>
