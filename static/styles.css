@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 body {
-    background: #282A3A;
+    background: #1c1c1c;
 }
 .custom-font {
     font-family: 'Poppins', sans-serif;
@@ -99,4 +99,8 @@ footer {
     background-color: #5c5c5c;
     backdrop-filter: blur(10px);
     padding: 0;
+  }
+
+  #summary {
+    text-align: left;
   }

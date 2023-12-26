@@ -31,9 +31,11 @@
             <div class="container mt-3 custom-container">               
                 <div class="game-card d-flex align-items-start mb-4 position-relative"> 
                     <img src="{{ cover_urls[0] }}" alt="{{ top_similar_games[0].name }} Cover" id="top_game"class="mr-3 mb-2" style="max-width: 360px">
-                        <div class="container">
-                            <h2 style="margin-left: 60px">{{ top_similar_games[0].name }} </h2>
-                            <p style="margin-left: 60px">{{ summaries[0] }}
+                        <div class="container mt-3 text-start ">
+                                <h2 style="margin-left: 60px">{{ top_similar_games[0].name }} </h2>
+                                <div class="d-flex text-start text-wrap">
+                                    <p  id="Summary" style="margin-left: 60px">{{ summaries[0] }}
+                                </div>
                         </div>
                 </div>
             </div>
