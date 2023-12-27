@@ -1,7 +1,7 @@
 # Indie Game Recommender
 
 ## Overview
-This is is basically what it says it is, a indie game recommender, a website that recommends indie games based on your recently played games. Just input a game you've played, and the recommender will suggest 5 indie games with similar genres.
+This is basically what it says it is, a indie game recommender, a website that recommends indie games based on your recently played games. Just input a game you've played, and the recommender will suggest 5 indie games with similar genres.
 
 #### Video Demo:  <URL HERE>
 
